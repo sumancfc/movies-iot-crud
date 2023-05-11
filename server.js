@@ -10,7 +10,7 @@ const uri = process.env.URL;
 
 const client = new MongoClient(uri, { useUnifiedTopology: true });
 //connect to mongodb
-async function run() {
+async function connection() {
   try {
     await client.connect();
     console.log("You successfully connected to MongoDB!");
@@ -26,6 +26,7 @@ app.get("/", (req, res) => {
 });
 
 // get all the movies
+// method: GET
 app.get("/movies", async (req, res) => {
   const movies = client.db("movie").collection("movies");
 
@@ -35,6 +36,7 @@ app.get("/movies", async (req, res) => {
 });
 
 // add movie in the list
+// method: POST
 app.post("/movie/add", async (req, res) => {
   const movies = client.db("movie").collection("movies");
   const { name, director, actor, actress, genre, year } = req.body;
@@ -52,6 +54,7 @@ app.post("/movie/add", async (req, res) => {
 });
 
 //get single movie by id
+// method: GET
 app.get("/movie/:id", async (req, res) => {
   const movies = client.db("movie").collection("movies");
   const { id } = req.params;
@@ -61,6 +64,7 @@ app.get("/movie/:id", async (req, res) => {
 });
 
 // update movie using id
+// method: PUT
 app.put("/movie/:id", async (req, res) => {
   const movies = client.db("movie").collection("movies");
   const { id } = req.params;
@@ -75,6 +79,7 @@ app.put("/movie/:id", async (req, res) => {
 });
 
 // delete movie using id
+// method: DELETE
 app.delete("/movie/:id", async (req, res) => {
   const movies = client.db("movie").collection("movies");
   const { id } = req.params;
@@ -83,10 +88,12 @@ app.delete("/movie/:id", async (req, res) => {
   res.status(200).json("Movie has been deleted.");
 });
 
-run()
+connection()
   .then(() => {
     app.listen(port, () => {
-      console.log(`Server running at http://localhost:${port}/`);
+      console.log(`Server running at http://127.0.0.1:${port}/`);
     });
   })
-  .catch(console.dir);
+  .catch((err) => {
+    console.log(err);
+  });
