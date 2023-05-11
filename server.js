@@ -22,7 +22,8 @@ async function connection() {
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Hello IOT");
+  res.send({
+    GET: "/movies",POST: "/movie/add",GET: "/movie/:id",PUT: "/movie/:id",DELETE: "/movie/:id"});
 });
 
 // get all the movies
