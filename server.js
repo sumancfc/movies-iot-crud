@@ -68,7 +68,7 @@ app.get("/outside-temperature", async (req, res) => {
   const { data } = await axios.get(
     "https://api.openweathermap.org/data/2.5/weather?lat=50.3135&lon=11.9128&appid=938c333ad5a8936d4e315ccdd459917a"
   );
-  res.status(200).send(data.main.temp);
+  res.status(200).json(data.main.temp);
   // res.status(200).send(data.results.sunset);
 });
 
