@@ -45,6 +45,17 @@ app.get("/date", async (req, res) => {
     res.end(currentDate.toDateString());
 });
 
+app.get("/time", async (req, res) => {
+    const currentDateTime = new Date();
+  const hour = currentDateTime.getHours();
+  const minute = currentDateTime.getMinutes();
+
+  const time = `${hour}:${minute}`;
+
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end(time);
+});
+
 // add movie in the list
 // method: POST
 app.post("/movie/add", async (req, res) => {
