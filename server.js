@@ -1,6 +1,7 @@
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
+const axios = require("axios");
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -37,6 +38,39 @@ app.get("/movies", async (req, res) => {
   const allMoviesList = await movies.find().toArray();
 
   res.status(200).json(allMoviesList);
+});
+
+app.get("/date", async (req, res) => {
+  const currentDate = new Date();
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end(currentDate.toDateString());
+});
+
+app.get("/time", async (req, res) => {
+  const currentDateTime = new Date();
+  const hour = currentDateTime.getHours();
+  const minute = currentDateTime.getMinutes();
+
+  const time = `${hour}:${minute}`;
+
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end(time);
+});
+
+app.get("/sunrise", async (req, res) => {
+  const { data } = await axios.get(
+    "https://api.sunrise-sunset.org/json?lat=50.3135&lng=11.9128"
+  );
+
+  res.status(200).send(data.results.sunrise);
+});
+
+app.get("/sunset", async (req, res) => {
+  const { data } = await axios.get(
+    "https://api.sunrise-sunset.org/json?lat=50.3135&lng=11.9128"
+  );
+
+  res.status(200).send(data.results.sunset);
 });
 
 // add movie in the list
