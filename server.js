@@ -39,6 +39,12 @@ app.get("/movies", async (req, res) => {
   res.status(200).json(allMoviesList);
 });
 
+app.get("/date", async (req, res) => {
+  const currentDate = new Date();
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end(currentDate.toDateString());
+});
+
 // add movie in the list
 // method: POST
 app.post("/movie/add", async (req, res) => {
