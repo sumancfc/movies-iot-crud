@@ -4,7 +4,6 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/index.js",
     "build": "tsc",
     "server": "nodemon src/index.ts"
@@ -19,6 +18,7 @@
     "mongodb": "^6.13.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.50.1",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.1",
     "nodemon": "^2.0.22",

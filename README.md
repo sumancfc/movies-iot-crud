@@ -19,7 +19,6 @@ This is a RESTful API for managing a movie database. It's built with Express.js 
 - MongoDB
 - npm or yarn
 
-
 ## API Endpoints
 
 - `GET /`: List all available endpoints
@@ -33,5 +32,3 @@ This is a RESTful API for managing a movie database. It's built with Express.js 
 - `GET /sunrise`: Get sunrise time
 - `GET /sunset`: Get sunset time
 - `GET /outside-temperature`: Get current outside temperature
-
-

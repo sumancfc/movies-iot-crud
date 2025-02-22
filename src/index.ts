@@ -96,7 +96,7 @@ app.get("/movies", async (req: Request, res: Response) => {
 app.post("/movie/add", async (req: Request, res: Response) => {
   const { name, director, actor, actress, genre, year }: Movie = req.body;
 
-  const movie = await movies.insertOne({
+  const result = await movies.insertOne({
     name,
     actor,
     actress,
@@ -105,7 +105,21 @@ app.post("/movie/add", async (req: Request, res: Response) => {
     year,
   });
 
-  res.status(201).json({ message: "New movie has been created", movie });
+  if (result.insertedId) {
+    const insertedMovie = {
+      _id: result.insertedId,
+      name,
+      director,
+      actor,
+      actress,
+      genre,
+      year,
+    };
+
+    res.status(201).json({ message: "New movie has been created", movie: insertedMovie });
+  } else {
+    res.status(500).json({ message: "Movie creation failed" });
+  }
 });
 
 //get single movie by id
