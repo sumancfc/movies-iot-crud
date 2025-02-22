@@ -24,7 +24,8 @@ async function connection(): Promise<void> {
     await client.connect();
     console.log("Connected to mongodb database");
   } catch (err) {
-    console.log(err);
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
   }
 }
 
@@ -109,35 +110,68 @@ app.post("/movie/add", async (req: Request, res: Response) => {
 
 //get single movie by id
 // method: GET
+// @ts-ignore
 app.get("/movie/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
+    const movie = await movies.findOne({ _id: new ObjectId(id) });
 
-  const movie = await movies.findOne({ _id: new ObjectId(id) });
-  res.status(200).json(movie);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    res.status(200).json(movie);
+  } catch (error) {
+    errorHandling("Error getting movie:", res, error);
+  }
 });
 
 // update movie using id
 // method: PUT
+//@ts-ignore
 app.put("/movie/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const updateMovie: Partial<Movie> = req.body;
+  try {
+    const { id } = req.params;
+    const updateMovie: Partial<Movie> = req.body;
 
-  const movie = await movies.updateOne(
-    { _id: new ObjectId(id) },
-    { $set: updateMovie }
-  );
+    const movie = await movies.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updateMovie }
+    );
 
-  res.status(200).json({ message: "Movie has been updated.", movie });
+    if (movie.modifiedCount === 0) {
+      return res.status(404).json({ message: "Movie not found or not updated" });
+    }
+
+    res.status(200).json({ message: "Movie has been updated.", movie });
+  } catch (error) {
+    errorHandling("Error updating movie:", res, error);
+  }
 });
 
 // delete movie using id
 // method: DELETE
+//@ts-ignore
 app.delete("/movie/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  await movies.deleteOne({ _id: new ObjectId(id) });
-  res.status(200).json("Movie has been deleted.");
+  try {
+    const { id } = req.params;
+    const result = await movies.deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+    res.status(200).json({ message: "Movie has been deleted." });
+  } catch (error) {
+    errorHandling("Error deleting movie:", res, error);
+  }
 });
+
+export const errorHandling = (message: string, res:Response, error: unknown ) => {
+  if (error instanceof Error && error.name === 'BSONError') {
+    return res.status(400).json({ message: "Invalid movie ID" });
+  }
+  console.error(`${message}`, error);
+  return res.status(500).json({ message: "Internal server error" });
+}
 
 // run the server
 connection()
@@ -147,5 +181,5 @@ connection()
     });
   })
   .catch((err) => {
-    console.log(err);
+    console.error("Error starting server:", err);
   });
