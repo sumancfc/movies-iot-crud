@@ -41,7 +41,7 @@ test.describe('Movie API CRUD Tests', () => {
     });
 
     test('Get /movie/id - should return a single movie by id', async () => {
-        movieId = '67b926c0c909e7c8cd7fdfc2';
+        movieId = '67ba45d07744b5106e57de88';
 
         if (!movieId) {
             return test.fail();
@@ -52,6 +52,42 @@ test.describe('Movie API CRUD Tests', () => {
         const movie = await response.json();
         expect(movie).toHaveProperty('_id');
         expect(movie._id).toBe(movieId);
-        expect(movie.name).toBe('Oppenheimer');
+        expect(movie.name).toBe('Test Movie name');
+    });
+
+    test('DELETE /movie/:id - should delete a movie', async () => {
+        movieId = '67ba452bd163b6a5dbb166bf';
+
+        if(!movieId){
+            return test.fail();
+        }
+
+        const response = await request.delete(`${BASE_URL}/movie/${movieId}`);
+        expect(response.status()).toBe(200);
+        const responseBody = await response.json();
+        expect(responseBody.message).toBe('Movie has been deleted.');
+
+        const getResponse = await request.get(`${BASE_URL}/movie/${movieId}`);
+        expect(getResponse.status()).toBe(404);
+    });
+
+    test('GET /movie/:id - should return 404 if movie ID is not found', async () => {
+        const invalidId = '67b926c0c909e7c8cd7fdfc2';
+        const response = await request.get(`${BASE_URL}/movie/${invalidId}`);
+        expect(response.status()).toBe(404);
+        const responseBody = await response.json();
+        expect(responseBody.message).toBe('Movie not found');
+    });
+
+    test('GET /movie/:id - should return 400 if movie ID is invalid', async () => {
+        const invalidId = 'invalid-id';
+        const response = await request.get(`${BASE_URL}/movie/${invalidId}`);
+        expect(response.status()).toBe(400);
+        const responseBody = await response.json();
+        expect(responseBody.message).toBe('Invalid movie ID');
+    });
+
+    test.afterAll(async () => {
+        await request.dispose(); // Dispose of the APIRequestContext
     });
 });
